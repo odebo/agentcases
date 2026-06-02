@@ -18,7 +18,7 @@ export default function HomeFeed({ cases, lang = 'en' }: { cases: Case[]; lang?:
           <div key={date}>
             <div className="flex items-center gap-3 py-4">
               <span className="text-xs text-[var(--text-dim)] whitespace-nowrap">
-                {new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                {new Date(`${date}T00:00:00`).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </span>
               <div className="flex-1 h-px bg-[var(--border)]" />
             </div>
