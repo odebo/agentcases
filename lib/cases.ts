@@ -5,9 +5,13 @@ import { Case, CaseFrontmatter, Industry, TaskType } from './types'
 
 const CASES_DIR = path.join(process.cwd(), 'content/cases')
 
+let _cache: Case[] | null = null
+
 export function getAllCases(): Case[] {
+  if (_cache) return _cache
+  if (!fs.existsSync(CASES_DIR)) return []
   const files = fs.readdirSync(CASES_DIR).filter(f => f.endsWith('.md'))
-  return files
+  _cache = files
     .map(filename => {
       const slug = filename.replace(/\.md$/, '')
       const raw = fs.readFileSync(path.join(CASES_DIR, filename), 'utf-8')
@@ -15,6 +19,7 @@ export function getAllCases(): Case[] {
       return { slug, content, ...(data as CaseFrontmatter) }
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  return _cache
 }
 
 export function getCaseBySlug(slug: string): Case | undefined {
