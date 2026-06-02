@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const label = TASK_LABELS[slug as TaskType]
   if (!label) return {}
   return {
-    title: `AI Agent Use Cases: ${label} — AgentCases`,
+    title: `AI Agent Use Cases: ${label} — Agenthanks`,
     description: `Real-world AI Agent use cases for ${label}. See how businesses automate with AI agents.`,
   }
 }

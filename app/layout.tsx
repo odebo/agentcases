@@ -5,7 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'AgentCases — Real-world AI Agent Use Cases',
+  title: 'Agenthanks — Real-world AI Agent Use Cases',
   description: 'Browse real-world AI Agent use cases by industry. Sales, HR, Legal, Operations and more.',
 }
 

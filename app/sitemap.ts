@@ -3,7 +3,7 @@ import { getAllCases } from '@/lib/cases'
 
 export const dynamic = 'force-static'
 
-const BASE_URL = 'https://agentcases.com'
+const BASE_URL = 'https://www.agenthanks.com'
 
 const INDUSTRIES = ['sales', 'customer-service', 'hr', 'legal', 'operations', 'marketing', 'finance', 'product']
 const TASKS = ['automation', 'data-analysis', 'content-generation', 'decision-support', 'customer-communication']
