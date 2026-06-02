@@ -3,7 +3,7 @@ import { useState } from 'react'
 import FilterBar from './FilterBar'
 import CaseCard from './CaseCard'
 import { Case, Industry } from '@/lib/types'
-import { groupByDate } from '@/lib/cases'
+import { groupByDate } from '@/lib/utils'
 
 export default function HomeFeed({ cases, lang = 'en' }: { cases: Case[]; lang?: 'en' | 'zh' }) {
   const [activeIndustry, setActiveIndustry] = useState<Industry | 'all'>('all')
