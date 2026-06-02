@@ -11,7 +11,7 @@ export default function HomeFeed({ cases, lang = 'en' }: { cases: Case[]; lang?:
   const grouped = groupByDate(filtered)
 
   return (
-    <>
+    <div className="flex-1 flex flex-col min-w-0">
       <FilterBar active={activeIndustry} onChange={setActiveIndustry} lang={lang} />
       <main className="flex-1 border-l border-[var(--border)] pl-6">
         {Object.entries(grouped).map(([date, dayCases]) => (
@@ -29,6 +29,6 @@ export default function HomeFeed({ cases, lang = 'en' }: { cases: Case[]; lang?:
           <p className="text-[var(--text-muted)] py-12 text-center">No cases yet for this category.</p>
         )}
       </main>
-    </>
+    </div>
   )
 }

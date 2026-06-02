@@ -24,7 +24,7 @@ export default function FilterBar({
       {INDUSTRIES.map(({ slug, label, labelZh, emoji }) => (
         <button key={slug} type="button" aria-pressed={active === slug}
           onClick={() => onChange(slug)}
-          className={`px-3.5 py-1 rounded-full text-xs border whitespace-nowrap
+          className={`appearance-none px-3.5 py-1 rounded-full text-xs border whitespace-nowrap cursor-pointer
             ${active === slug
               ? 'bg-[#238636] border-[#238636] text-white'
               : 'bg-transparent border-[var(--border-secondary)] text-[var(--text-muted)] hover:text-[var(--text)]'
