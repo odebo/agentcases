@@ -22,7 +22,7 @@ export default function FilterBar({
   return (
     <div className="flex gap-2 px-6 py-3 border-b border-[var(--border)] overflow-x-auto">
       {INDUSTRIES.map(({ slug, label, labelZh, emoji }) => (
-        <button key={slug}
+        <button key={slug} type="button" aria-pressed={active === slug}
           onClick={() => onChange(slug)}
           className={`px-3.5 py-1 rounded-full text-xs border whitespace-nowrap
             ${active === slug

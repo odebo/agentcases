@@ -30,8 +30,8 @@ export default function Nav({ lang = 'en' }: { lang?: 'en' | 'zh' }) {
           RSS
         </Link>
         <div className="flex border border-[var(--border-secondary)] rounded overflow-hidden text-xs">
-          <Link href={pathname.replace('/zh', '') || '/'} className={`px-2.5 py-1 ${!isZh ? 'bg-[#238636] text-white' : 'text-[var(--text-muted)]'}`}>EN</Link>
-          <Link href={`/zh${pathname}`} className={`px-2.5 py-1 ${isZh ? 'bg-[#238636] text-white' : 'text-[var(--text-muted)]'}`}>中文</Link>
+          <Link href={pathname.replace(/^\/zh/, '') || '/'} className={`px-2.5 py-1 ${!isZh ? 'bg-[#238636] text-white' : 'text-[var(--text-muted)]'}`}>EN</Link>
+          <Link href={`/zh${pathname.replace(/^\/zh/, '')}`} className={`px-2.5 py-1 ${isZh ? 'bg-[#238636] text-white' : 'text-[var(--text-muted)]'}`}>中文</Link>
         </div>
       </div>
     </nav>
