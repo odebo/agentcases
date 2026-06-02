@@ -27,7 +27,7 @@ export default function FilterBar({
           className={`px-3.5 py-1 rounded-full text-xs border whitespace-nowrap
             ${active === slug
               ? 'bg-[#238636] border-[#238636] text-white'
-              : 'border-[var(--border-secondary)] text-[var(--text-muted)] hover:text-[var(--text)]'
+              : 'bg-transparent border-[var(--border-secondary)] text-[var(--text-muted)] hover:text-[var(--text)]'
             }`}>
           {emoji && `${emoji} `}{lang === 'zh' ? labelZh : label}
         </button>
