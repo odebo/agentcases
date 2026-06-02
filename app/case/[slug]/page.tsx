@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CasePage({ params }: Props) {
   const { slug } = await params
   const c = getCaseBySlug(slug)
-  if (!c) notFound()
+  if (!c) return notFound()
 
   return (
     <>
