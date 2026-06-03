@@ -1,0 +1,33 @@
+name: Weekly Case Collection
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # Every Monday at 02:00 UTC
+  workflow_dispatch:       # Allow manual trigger from GitHub Actions tab
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run collection pipeline
+        env:
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/collect-cases.mjs
+
+      - name: Push new cases
+        run: |
+          git config user.name "agenthanks-bot"
+          git config user.email "bot@agenthanks.com"
+          git push origin main || echo "Nothing to push"
