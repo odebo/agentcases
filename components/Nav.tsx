@@ -32,10 +32,7 @@ export default function Nav({ lang = 'en' }: { lang?: 'en' | 'zh' }) {
         />
       </form>
       <div className="ml-auto flex items-center gap-3 shrink-0">
-        <Link href="/rss.xml" className="text-xs text-[var(--accent-orange)] border border-[#f0883e44] px-2.5 py-1 rounded-full">
-          RSS
-        </Link>
-        <div className="flex border border-[var(--border-secondary)] rounded overflow-hidden text-xs">
+<div className="flex border border-[var(--border-secondary)] rounded overflow-hidden text-xs">
           <Link href={pathname.replace(/^\/zh/, '') || '/'} className={`px-2.5 py-1 ${!isZh ? 'bg-[#238636] text-white' : 'text-[var(--text-muted)]'}`}>EN</Link>
           <Link href={`/zh${pathname.replace(/^\/zh/, '')}`} className={`px-2.5 py-1 ${isZh ? 'bg-[#238636] text-white' : 'text-[var(--text-muted)]'}`}>中文</Link>
         </div>
