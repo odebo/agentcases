@@ -1,5 +1,5 @@
+'use client'
 import Link from 'next/link'
-import { getAllCases } from '@/lib/cases'
 import { Industry, TaskType } from '@/lib/types'
 
 const INDUSTRIES: { slug: Industry; label: string; labelZh: string; emoji: string }[] = [
@@ -9,6 +9,7 @@ const INDUSTRIES: { slug: Industry; label: string; labelZh: string; emoji: strin
   { slug: 'legal',            label: 'Legal',            labelZh: '法务', emoji: '⚖️' },
   { slug: 'operations',       label: 'Operations',       labelZh: '运营', emoji: '📊' },
   { slug: 'marketing',        label: 'Marketing',        labelZh: '市场', emoji: '📣' },
+  { slug: 'finance',          label: 'Finance',          labelZh: '财务', emoji: '💰' },
 ]
 
 const TASKS: { slug: TaskType; label: string; labelZh: string; emoji: string }[] = [
@@ -19,33 +20,46 @@ const TASKS: { slug: TaskType; label: string; labelZh: string; emoji: string }[]
   { slug: 'customer-communication', label: 'Communication', labelZh: '客户沟通', emoji: '💬' },
 ]
 
-export default function Sidebar({ lang = 'en' }: { lang?: 'en' | 'zh' }) {
-  const cases = getAllCases()
+type Props = {
+  lang?: 'en' | 'zh'
+  active: Industry | 'all'
+  onChange: (v: Industry | 'all') => void
+  industryCounts: Record<string, number>
+  taskCounts: Record<string, number>
+}
+
+export default function Sidebar({ lang = 'en', active, onChange, industryCounts, taskCounts }: Props) {
   const prefix = lang === 'zh' ? '/zh' : ''
-  const counts = {
-    industry: Object.fromEntries(INDUSTRIES.map(i => [i.slug, cases.filter(c => c.industry === i.slug).length])),
-    task: Object.fromEntries(TASKS.map(t => [t.slug, cases.filter(c => c.task.includes(t.slug)).length])),
-  }
 
   return (
     <aside className="w-44 shrink-0 py-5 pr-6">
       <div className="mb-5">
-        <div className="text-[11px] uppercase tracking-widest text-[var(--text-dim)] mb-2">{lang === 'zh' ? '行业' : 'Industry'}</div>
+        <div className="text-[11px] uppercase tracking-widest text-[var(--text-dim)] mb-2">
+          {lang === 'zh' ? '行业' : 'Industry'}
+        </div>
+        <button type="button" onClick={() => onChange('all')}
+          className={`w-full flex items-center justify-between px-2 py-1.5 rounded text-[13px] cursor-pointer appearance-none
+            ${active === 'all' ? 'bg-[var(--bg-secondary)] text-white' : 'text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)]'}`}>
+          <span>{lang === 'zh' ? '全部' : 'All'}</span>
+        </button>
         {INDUSTRIES.map(({ slug, label, labelZh, emoji }) => (
-          <Link key={slug} href={`${prefix}/industry/${slug}`}
-            className="flex items-center justify-between px-2 py-1.5 rounded text-[13px] text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)]">
+          <button key={slug} type="button" onClick={() => onChange(slug)}
+            className={`w-full flex items-center justify-between px-2 py-1.5 rounded text-[13px] cursor-pointer appearance-none
+              ${active === slug ? 'bg-[var(--bg-secondary)] text-white' : 'text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)]'}`}>
             <span>{emoji} {lang === 'zh' ? labelZh : label}</span>
-            <span className="text-[11px] text-[var(--text-dim)]">{counts.industry[slug] ?? 0}</span>
-          </Link>
+            <span className="text-[11px] text-[var(--text-dim)]">{industryCounts[slug] ?? 0}</span>
+          </button>
         ))}
       </div>
       <div>
-        <div className="text-[11px] uppercase tracking-widest text-[var(--text-dim)] mb-2">{lang === 'zh' ? '任务类型' : 'Task'}</div>
+        <div className="text-[11px] uppercase tracking-widest text-[var(--text-dim)] mb-2">
+          {lang === 'zh' ? '任务类型' : 'Task'}
+        </div>
         {TASKS.map(({ slug, label, labelZh, emoji }) => (
           <Link key={slug} href={`${prefix}/task/${slug}`}
             className="flex items-center justify-between px-2 py-1.5 rounded text-[13px] text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)]">
             <span>{emoji} {lang === 'zh' ? labelZh : label}</span>
-            <span className="text-[11px] text-[var(--text-dim)]">{counts.task[slug] ?? 0}</span>
+            <span className="text-[11px] text-[var(--text-dim)]">{taskCounts[slug] ?? 0}</span>
           </Link>
         ))}
       </div>

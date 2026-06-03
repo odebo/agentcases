@@ -1,6 +1,5 @@
 import Nav from '@/components/Nav'
-import Sidebar from '@/components/Sidebar'
-import HomeFeed from '@/components/HomeFeed'
+import HomeLayout from '@/components/HomeLayout'
 import { getAllCases } from '@/lib/cases'
 import type { Metadata } from 'next'
 
@@ -14,10 +13,7 @@ export default function HomePageZh() {
   return (
     <>
       <Nav lang="zh" />
-      <div className="flex max-w-5xl mx-auto px-6">
-        <Sidebar lang="zh" />
-        <HomeFeed cases={cases} lang="zh" />
-      </div>
+      <HomeLayout cases={cases} lang="zh" />
     </>
   )
 }
