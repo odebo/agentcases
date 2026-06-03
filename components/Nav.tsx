@@ -10,7 +10,7 @@ export default function Nav({ lang = 'en' }: { lang?: 'en' | 'zh' }) {
   return (
     <nav className="flex items-center gap-6 px-6 py-3.5 border-b border-[var(--border)] sticky top-0 bg-[var(--bg)] z-10">
       <Link href={prefix || '/'} className="font-bold text-base text-white tracking-tight">
-        Agent<span className="text-[var(--accent-green)]">thanks</span>
+        Agent<span className="text-[var(--accent-green)]">hanks</span>
       </Link>
       <div className="flex gap-4">
         {[
