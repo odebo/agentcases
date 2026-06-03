@@ -39,13 +39,13 @@ export default function Sidebar({ lang = 'en', active, onChange, industryCounts,
         </div>
         <button type="button" onClick={() => onChange('all')}
           className={`w-full flex items-center justify-between px-2 py-1.5 rounded text-[13px] cursor-pointer appearance-none
-            ${active === 'all' ? 'bg-[var(--bg-secondary)] text-white' : 'text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)]'}`}>
+            ${active === 'all' ? 'bg-[#238636] text-white' : 'text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)]'}`}>
           <span>{lang === 'zh' ? '全部' : 'All'}</span>
         </button>
         {INDUSTRIES.map(({ slug, label, labelZh, emoji }) => (
           <button key={slug} type="button" onClick={() => onChange(slug)}
             className={`w-full flex items-center justify-between px-2 py-1.5 rounded text-[13px] cursor-pointer appearance-none
-              ${active === slug ? 'bg-[var(--bg-secondary)] text-white' : 'text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)]'}`}>
+              ${active === slug ? 'bg-[#238636] text-white' : 'text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)]'}`}>
             <span>{emoji} {lang === 'zh' ? labelZh : label}</span>
             <span className="text-[11px] text-[var(--text-dim)]">{industryCounts[slug] ?? 0}</span>
           </button>
@@ -55,6 +55,10 @@ export default function Sidebar({ lang = 'en', active, onChange, industryCounts,
         <div className="text-[11px] uppercase tracking-widest text-[var(--text-dim)] mb-2">
           {lang === 'zh' ? '任务类型' : 'Task'}
         </div>
+        <Link href={prefix || '/'}
+          className="flex items-center justify-between px-2 py-1.5 rounded text-[13px] bg-[#238636] text-white">
+          <span>{lang === 'zh' ? '全部' : 'All'}</span>
+        </Link>
         {TASKS.map(({ slug, label, labelZh, emoji }) => (
           <Link key={slug} href={`${prefix}/task/${slug}`}
             className="flex items-center justify-between px-2 py-1.5 rounded text-[13px] text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)]">
