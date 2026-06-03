@@ -1,31 +1,37 @@
 'use client'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export default function Nav({ lang = 'en' }: { lang?: 'en' | 'zh' }) {
   const pathname = usePathname()
+  const router = useRouter()
   const isZh = lang === 'zh'
   const prefix = isZh ? '/zh' : ''
+  const [query, setQuery] = useState('')
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    const q = query.trim()
+    if (!q) return
+    router.push(`${prefix}/search?q=${encodeURIComponent(q)}`)
+  }
 
   return (
-    <nav className="flex items-center gap-6 px-6 py-3.5 border-b border-[var(--border)] sticky top-0 bg-[var(--bg)] z-10">
-      <Link href={prefix || '/'} className="font-bold text-base text-white tracking-tight">
+    <nav className="flex items-center gap-4 px-6 py-3.5 border-b border-[var(--border)] sticky top-0 bg-[var(--bg)] z-10">
+      <Link href={prefix || '/'} className="font-bold text-base text-white tracking-tight shrink-0">
         Agent<span className="text-[var(--accent-green)]">hanks</span>
       </Link>
-      <div className="flex gap-4">
-        {[
-          { href: prefix || '/', label: isZh ? '全部案例' : 'All Cases' },
-          { href: `${prefix}/industry/sales`, label: isZh ? '按行业' : 'By Industry' },
-          { href: `${prefix}/task/automation`, label: isZh ? '按任务' : 'By Task' },
-          { href: '/about', label: isZh ? '关于' : 'About' },
-        ].map(({ href, label }) => (
-          <Link key={href} href={href}
-            className={`text-sm ${pathname === href ? 'text-white' : 'text-[var(--text-muted)] hover:text-[var(--text)]'}`}>
-            {label}
-          </Link>
-        ))}
-      </div>
-      <div className="ml-auto flex items-center gap-3">
+      <form onSubmit={handleSearch} className="flex-1 max-w-md">
+        <input
+          type="text"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder={isZh ? '搜索案例...' : 'Search cases...'}
+          className="w-full bg-[var(--bg-secondary)] border border-[var(--border)] rounded-md px-3 py-1.5 text-sm text-[var(--text)] placeholder-[var(--text-dim)] outline-none focus:border-[var(--border-secondary)]"
+        />
+      </form>
+      <div className="ml-auto flex items-center gap-3 shrink-0">
         <Link href="/rss.xml" className="text-xs text-[var(--accent-orange)] border border-[#f0883e44] px-2.5 py-1 rounded-full">
           RSS
         </Link>
