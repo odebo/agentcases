@@ -10,7 +10,7 @@ npm run build    # production build
 npm run lint     # ESLint
 ```
 
-No test suite. No `output: 'export'` — Vercel runs Next.js in server/SSG mode.
+No test suite. Always pass `--registry https://registry.npmjs.org` to any npm install commands — the default registry is a Xiaomi private registry with an expired token.
 
 ## Stack
 
@@ -18,21 +18,49 @@ No test suite. No `output: 'export'` — Vercel runs Next.js in server/SSG mode.
 - **Tailwind CSS v3** (NOT v4) — `tailwind.config.js` + standard PostCSS pipeline
 - **next-mdx-remote v6** (`next-mdx-remote/rsc`) for Server Components
 - **gray-matter** for MDX frontmatter parsing
-- Deployed to Vercel, domain `www.agenthanks.com`
+- Deployed to Vercel, domain `www.agenthanks.com`, Node 20 pinned in `package.json` engines
 
 ## Critical: Tailwind v3, not v4
 
 `globals.css` uses `@tailwind base/components/utilities` (v3 syntax). Do NOT use `@import "tailwindcss"` or `@source` / `@plugin` directives (v4 syntax). Next.js 16 uses Turbopack by default, which does not run PostCSS — v3 works because Next.js has built-in Tailwind v3 support that bypasses this.
 
+## Route Structure
+
+```
+/                        → app/page.tsx         (EN homepage)
+/zh/                     → app/zh/page.tsx      (ZH homepage)
+/case/[slug]             → app/case/[slug]/page.tsx
+/zh/case/[slug]          → app/zh/case/[slug]/page.tsx
+/industry/[slug]         → app/industry/[slug]/page.tsx
+/zh/industry/[slug]      → app/zh/industry/[slug]/page.tsx
+/task/[slug]             → app/task/[slug]/page.tsx   (EN only, ZH has /zh/task/[slug])
+/search?q=               → app/search/page.tsx  (dynamic, server-rendered)
+/zh/search?q=            → app/zh/search/page.tsx
+/sitemap.xml             → app/sitemap.ts       (base URL: https://www.agenthanks.com)
+/rss.xml                 → app/rss.xml/route.ts
+```
+
+All `/zh/*` pages pass `lang="zh"` to components, which switch text, dates, and links accordingly.
+
+## Component Architecture
+
+**HomeLayout** (`components/HomeLayout.tsx`) — client component that owns the industry filter state. Renders `Sidebar` + `HomeFeed` together. Used by both `/` and `/zh/`.
+
+**Sidebar** (`components/Sidebar.tsx`) — client component. Receives `active` / `onChange` / `industryCounts` as props from HomeLayout. Industry items are filter buttons; no Task section (removed).
+
+**HomeFeed** (`components/HomeFeed.tsx`) — client component. Receives `activeIndustry` prop from HomeLayout (no internal state).
+
+**Nav** (`components/Nav.tsx`) — client component with search form. Submits to `/search?q=` or `/zh/search?q=`. No nav links (removed), only logo + search + EN/ZH switcher.
+
 ## Content Architecture
 
-All case studies live in `content/cases/*.md` as MDX with frontmatter. The slug is the filename without `.md`.
+All case studies live in `content/cases/*.md`. The slug is the filename without `.md`. Files are auto-discovered at build time — no registration needed.
 
-**Required frontmatter fields** (see `lib/types.ts` for full type):
+**Required frontmatter fields:**
 ```yaml
 title_en, title_zh        # bilingual title
 summary_en, summary_zh    # one-paragraph summary
-comment_en, comment_zh    # editorial insight ("AI comment" callout)
+comment_en, comment_zh    # editorial insight shown in "WHY IT MATTERS" callout
 industry: sales | customer-service | hr | legal | operations | marketing | finance | product
 task: [automation | data-analysis | content-generation | decision-support | customer-communication]
 framework: string          # e.g. "GPT-4", "Claude", "LangChain"
@@ -41,32 +69,23 @@ date: ISO8601              # controls sort order on homepage
 source: string
 source_url: string
 meta_title, meta_description
-featured?: boolean         # optional, highlights the card
+featured?: boolean
 ```
 
 ## Data Flow
 
-`lib/cases.ts` reads all markdown files at build time, caches them in a module-level variable, and exposes `getAllCases()`, `getCaseBySlug()`, `getCasesByIndustry()`, `getCasesByTask()`, `groupByDate()`. All content reading is server-side only.
-
-## Page Structure
-
-- `/` — `app/page.tsx` → `Nav` + `Sidebar` + `HomeFeed` (client component with industry filter)
-- `/case/[slug]` — MDX rendered via `MDXRemote` from `next-mdx-remote/rsc`
-- `/industry/[slug]` and `/task/[slug]` — static taxonomy pages, params come from enum keys in `lib/types.ts`
-- `/rss.xml` — `app/rss.xml/route.ts` using `lib/rss.ts`
-- `/sitemap.xml` — `app/sitemap.ts`, base URL is `https://www.agenthanks.com`
+`lib/cases.ts` reads all markdown files at build time, caches in a module-level variable, exposes `getAllCases()`, `getCaseBySlug()`, `getCasesByIndustry()`, `getCasesByTask()`, `groupByDate()`. Server-side only — never import in client components.
 
 ## Design System
 
-Dark GitHub-style theme. Colors are CSS variables defined in `globals.css`:
-`--bg`, `--bg-secondary`, `--border`, `--border-secondary`, `--text`, `--text-muted`, `--text-dim`, `--accent-green`, `--accent-blue`, `--accent-orange`, `--accent-yellow`.
+Dark GitHub-style theme. CSS variables in `globals.css`: `--bg`, `--bg-secondary`, `--border`, `--border-secondary`, `--text`, `--text-muted`, `--text-dim`, `--accent-green` (#3fb950), `--accent-blue`, `--accent-orange`, `--accent-yellow`.
 
-Use `var(--accent-green)` etc. in Tailwind via `text-[var(--accent-green)]` arbitrary value syntax. The `prose-invert prose-sm` classes from `@tailwindcss/typography` style MDX body content on case detail pages.
+Use via Tailwind arbitrary values: `text-[var(--accent-green)]`, `bg-[#238636]` (active/selected green).
 
-## Adding a New Case
+MDX body content uses `prose prose-invert prose-sm` from `@tailwindcss/typography`.
 
-Create `content/cases/<industry>-<descriptor>.md` with all required frontmatter fields. The file is auto-discovered at build time — no imports or registration needed. Slug is the filename.
+## Automated Case Collection
 
-## npm on This Machine
+`scripts/collect-cases.mjs` — weekly pipeline run via GitHub Actions (`.github/workflows/collect-cases.yml`, every Monday 02:00 UTC). Requires two GitHub repository secrets: `TAVILY_API_KEY` and `ANTHROPIC_API_KEY`. Uses Tavily to search for real-world AI agent case studies, Claude Haiku to extract and format them, then auto-commits new `.md` files to `content/cases/`.
 
-Always pass `--registry https://registry.npmjs.org` to npm commands. The default registry points to a Xiaomi private registry with an expired token.
+Trigger manually: `gh workflow run collect-cases.yml --repo odebo/agentcases`
